@@ -1,0 +1,79 @@
+Circle of strings
+Difficulty: HardAccuracy: 15.56%Submissions: 70K+Points: 8
+Given an array arr of lowercase strings, determine if the strings can be chained together to form a circle.
+A string X can be chained together with another string Y if the last character of X is the same as the first character of Y. If every string of the array can be chained with exactly two strings of the array(one with the first character and the second with the last character of the string), it will form a circle.
+
+For example, for the array arr[] = {"for", "geek", "rig", "kaf"} the answer will be Yes as the given strings can be chained as "for", "rig", "geek" and "kaf"
+
+Examples
+
+Input: arr[] = ["abc", "bcd", "cdf"]
+Output: 0
+Explaination: These strings can't form a circle because no string has 'd'at the starting index.
+Input: arr[] = ["ab" , "bc", "cd", "da"]
+Output: 1
+Explaination: These strings can form a circle of strings.
+Expected Time Complexity: O(n)
+Expected Auxiliary Space: O(n)
+
+Constraints: 
+1 ≤ length of strings ≤ 20
+
+#User function Template for python3
+
+class Solution:
+    def isCircle(self, arr):
+        # Helper function to perform DFS traversal
+        def dfs(v, visited, graph):
+            visited[v] = True
+            for neighbor in graph[v]:
+                if not visited[neighbor]:
+                    dfs(neighbor, visited, graph)
+        
+        # Step 1: Create adjacency list and count in-degree and out-degree
+        graph = {chr(i): [] for i in range(ord('a'), ord('z') + 1)} # Graph for forward traversal
+        reverse_graph = {chr(i): [] for i in range(ord('a'), ord('z') + 1)} # Graph for reverse traversal
+        in_degree = {chr(i): 0 for i in range(ord('a'), ord('z') + 1)}
+        out_degree = {chr(i): 0 for i in range(ord('a'), ord('z') + 1)}
+        
+        # Fill the graphs and degree counts
+        for string in arr:
+            start = string[0]
+            end = string[-1]
+            graph[start].append(end)
+            reverse_graph[end].append(start)
+            out_degree[start] += 1
+            in_degree[end] += 1
+        
+        # Step 2: Check if in-degree and out-degree of every character are equal
+        for char in range(ord('a'), ord('z') + 1):
+            if in_degree[chr(char)] != out_degree[chr(char)]:
+                return 0
+        
+        # Step 3: Check if all characters with non-zero in/out-degree are in the same component
+        # Find a starting character with non-zero out-degree
+        start_char = None
+        for string in arr:
+            start_char = string[0]
+            break
+        
+        # DFS to check connectivity in the forward graph
+        visited = {chr(i): False for i in range(ord('a'), ord('z') + 1)}
+        dfs(start_char, visited, graph)
+        
+        # Check if all nodes with non-zero degree are visited in forward DFS
+        for char in range(ord('a'), ord('z') + 1):
+            if out_degree[chr(char)] > 0 and not visited[chr(char)]:
+                return 0
+        
+        # DFS to check connectivity in the reverse graph (for strongly connected component check)
+        visited = {chr(i): False for i in range(ord('a'), ord('z') + 1)}
+        dfs(start_char, visited, reverse_graph)
+        
+        # Check if all nodes with non-zero degree are visited in reverse DFS
+        for char in range(ord('a'), ord('z') + 1):
+            if in_degree[chr(char)] > 0 and not visited[chr(char)]:
+                return 0
+        
+        return 1
+        # code here

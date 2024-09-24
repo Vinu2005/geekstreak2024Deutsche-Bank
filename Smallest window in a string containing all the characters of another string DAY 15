@@ -1,0 +1,64 @@
+Smallest window in a string containing all the characters of another string
+Difficulty: HardAccuracy: 30.19%Submissions: 157K+Points: 8
+Given two strings s and p. Find the smallest window in the string s consisting of all the characters(including duplicates) of the string p.  Return "-1" in case there is no such window present. In case there are multiple such windows of same length, return the one with the least starting index.
+Note : All characters are in Lowercase alphabets. 
+
+Examples:
+
+Input: s = "timetopractice", p = "toc"
+Output: toprac
+Explanation: "toprac" is the smallest
+substring in which "toc" can be found.
+Input: s = "zoomlazapzo", p = "oza"
+Output: apzo
+Explanation: "apzo" is the smallest 
+substring in which "oza" can be found.
+Expected Time Complexity: O(|s|)
+Expected Auxiliary Space: O(n), n = len(p)
+
+Constraints: 
+1 ≤ |s|, |p| ≤ 10^5
+
+class Solution:
+    # Function to find the smallest window in string s consisting of all characters of string p.
+    def smallestWindow(self, s, p):
+        # Hashmaps to store character frequencies in p and in the current window of s
+        countT, window = {}, {}  
+
+        # Populate the countT hashmap with the frequency of each character in p
+        for c in p:
+            countT[c] = 1 + countT.get(c, 0)
+
+        # Initialize variables
+        have, need = 0, len(countT)  # 'have' tracks satisfied characters, 'need' is total unique chars in p
+        res, reslen = [-1, -1], float("infinity")  # Store the result window's start and end index
+        l = 0  # Left pointer to represent the start of the sliding window
+        
+        # Traverse through string s with the right pointer (r)
+        for r in range(len(s)):    
+            c = s[r]
+            # Add the current character to the window hashmap
+            window[c] = 1 + window.get(c, 0)
+
+            # If the current character in s satisfies the frequency requirement in p, increment 'have'
+            if c in countT and window[c] == countT[c]:
+                have += 1
+
+            # Shrink the window from the left while all characters are satisfied (have == need)
+            while have == need:
+                # Update the result window if the current window is smaller
+                if (r - l + 1) < reslen:
+                    res = [l, r]
+                    reslen = (r - l + 1)
+                
+                # Remove the character at the left pointer from the window
+                window[s[l]] -= 1
+                if s[l] in countT and window[s[l]] < countT[s[l]]:
+                    have -= 1  # Reduce 'have' if we no longer satisfy the requirement for this character
+                
+                # Move the left pointer to the right
+                l += 1
+        
+        # Return the smallest window substring or -1 if no valid window is found
+        l, r = res
+        return s[l:r+1] if reslen != float("infinity") else -1

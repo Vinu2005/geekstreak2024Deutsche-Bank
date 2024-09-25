@@ -1,0 +1,81 @@
+Palindrome Linked List
+Difficulty: MediumAccuracy: 41.48%Submissions: 327K+Points: 4
+Given a singly linked list of integers. The task is to check if the given linked list is palindrome or not.
+
+Examples:
+
+Input: LinkedList: 1->2->1->1->2->1
+Output: true
+Explanation: The given linked list is 1->2->1->1->2->1 , which is a palindrome and Hence, the output is true.
+
+Input: LinkedList: 1->2->3->4
+Output: false
+Explanation: The given linked list is 1->2->3->4, which is not a palindrome and Hence, the output is false.
+
+Expected Time Complexity: O(n)
+Expected Auxiliary Space: O(1) 
+Note: You should not use the recursive stack space as well
+
+Constraints:
+1 <= number of nodes <= 10^5
+1 ≤ node->data ≤ 10^3
+'''
+    Your task is to check if given linkedlist
+    is a pallindrome or not.
+    
+    Function Arguments: head (reference to head of the linked list)
+    Return Type: boolean , no need to print just return True or False.
+
+    {
+        # Node Class
+        class Node:
+            def __init__(self, data):   # data -> value stored in node
+                self.data = data
+                self.next = None
+    }
+
+    Contributed By: Nagendra Jha
+'''
+#Function to check whether the list is palindrome.
+class Solution:
+    def isPalindrome(self, head):
+        def reverseLinkedList(node):
+            prev = None
+            current = node
+            while current is not None:
+                next_node = current.next
+                current.next = prev
+                prev = current
+                current = next_node
+            return prev
+
+        # Function to find the middle of the linked list
+        def findMiddle(node):
+            slow = node
+            fast = node
+            while fast is not None and fast.next is not None:
+                slow = slow.next
+                fast = fast.next.next
+            return slow
+
+        # Function to compare two linked lists
+        def compareLists(list1, list2):
+            while list1 is not None and list2 is not None:
+                if list1.data != list2.data:
+                    return False
+                list1 = list1.next
+                list2 = list2.next
+            return True
+
+        if head is None or head.next is None:
+            return True
+
+        # Find the middle of the linked list
+        middle = findMiddle(head)
+
+        # Reverse the second half of the linked list
+        second_half = reverseLinkedList(middle)
+
+        # Compare the first and second halves of the linked list
+        return compareLists(head, second_half)
+        #code here
